@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uber Web Clone</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="light-mode">
+    <div id="app">
+        <!-- Toast Notifications Container -->
+        <div id="toast-container"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <i class="fa-solid fa-car-side logo-icon"></i>
+                <span class="logo-text">Uber</span>
+                <button id="theme-toggle" class="icon-btn" title="Cambiar tema">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="ride">
+                    <i class="fa-solid fa-car"></i>
+                    <span>Viajar</span>
+                </button>
+                <button class="nav-item" data-view="history">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Actividad</span>
+                </button>
+            </nav>
+
+            <div class="user-profile-wrapper">
+                <div class="user-profile" id="user-profile-btn">
+                    <div class="avatar"><i class="fa-solid fa-user"></i></div>
+                    <div class="user-info">
+                        <span class="name" id="display-user-name">Usuario</span>
+                        <span class="rating"><i class="fa-solid fa-star"></i> <span id="display-user-rating">4.92</span></span>
+                    </div>
+                </div>
+
+                <div id="user-dropdown" class="dropdown-menu hidden">
+                    <button class="dropdown-item" id="btn-settings">
+                        <i class="fa-solid fa-gear"></i> Configuración
+                    </button>
+                    <button class="dropdown-item danger" id="btn-logout">
+                        <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Panel Control -->
+        <main class="panel-container">
+            <section id="view-ride" class="view active">
+                <div class="header">
+                    <h2>¿A dónde vas?</h2>
+                </div>
+
+                <!-- Input Box -->
+                <div class="location-box">
+                    <div class="dots-indicator">
+                        <span class="dot origin-dot"></span>
+                        <span class="line"></span>
+                        <span class="dot dest-dot"></span>
+                    </div>
+                    <div class="inputs">
+                        <div class="input-group">
+                            <input type="text" id="origin-input" placeholder="Obteniendo tu ubicación..." autocomplete="off">
+                            <button id="recenter-gps-btn" class="icon-btn-small" title="Usar mi ubicación actual">
+                                <i class="fa-solid fa-crosshairs"></i>
+                            </button>
+                            <div id="origin-results" class="search-results-dropdown hidden"></div>
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="destination-input" placeholder="Ingresa tu destino..." autocomplete="off">
+                            <button id="clear-dest" class="clear-btn hidden"><i class="fa-solid fa-xmark"></i></button>
+                            <div id="destination-results" class="search-results-dropdown hidden"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lugares Favoritos y Recientes -->
+                <div id="favorites-section" class="favorites-section">
+                    <div class="favorites-header">
+                        <span>Favoritos y Recientes</span>
+                        <button id="save-favorite-btn" class="text-btn hidden" title="Guardar destino actual"><i class="fa-solid fa-star"></i> Guardar</button>
+                    </div>
+                    <div id="favorites-list" class="favorites-list">
+                        <!-- Dinámico -->
+                    </div>
+                </div>
+
+                <!-- Ride Options -->
+                <div id="ride-options" class="ride-options hidden">
+                    <h3>Vehículos disponibles</h3>
+                    <div class="vehicle-list">
+                        <div class="vehicle-card selected" data-type="uberx" data-price-mult="1.0">
+                            <img src="https://cdn-icons-png.flaticon.com/512/744/744465.png" alt="UberX">
+                            <div class="vehicle-info">
+                                <div class="vehicle-title">
+                                    <span>UberX</span>
+                                    <span class="capacity"><i class="fa-solid fa-user"></i> 4</span>
+                                </div>
+                                <span class="eta" id="eta-uberx">3 min de espera</span>
+                            </div>
+                            <div class="price" id="price-uberx">$120.00</div>
+                        </div>
+
+                        <div class="vehicle-card" data-type="comfort" data-price-mult="1.3">
+                            <img src="https://cdn-icons-png.flaticon.com/512/3202/3202003.png" alt="Comfort">
+                            <div class="vehicle-info">
+                                <div class="vehicle-title">
+                                    <span>Comfort</span>
+                                    <span class="capacity"><i class="fa-solid fa-user"></i> 4</span>
+                                </div>
+                                <span class="eta" id="eta-comfort">5 min de espera</span>
+                            </div>
+                            <div class="price" id="price-comfort">$156.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method Selector -->
+                    <div class="payment-selector" id="open-payment-modal">
+                        <i class="fa-solid fa-credit-card" id="selected-payment-icon"></i>
+                        <span id="selected-payment-text">Visa •••• 4242</span>
+                        <i class="fa-solid fa-chevron-right chevron"></i>
+                    </div>
+
+                    <button id="request-ride-btn" class="primary-btn">
+                        Confirmar UberX
+                    </button>
+                </div>
+
+                <!-- Status Card -->
+                <div id="status-card" class="status-card hidden">
+                    <div id="status-searching" class="status-state">
+                        <div class="pulse-ring"></div>
+                        <h3>Buscando tu conductor...</h3>
+                        <p>Contactando conductores cercanos</p>
+                        <button id="cancel-ride-btn" class="secondary-btn">Cancelar solicitud</button>
+                    </div>
+
+                    <div id="status-active" class="status-state hidden">
+                        <div class="driver-card">
+                            <img id="driver-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" alt="Conductor">
+                            <div class="driver-info">
+                                <h4 id="driver-name">Carlos Mendoza</h4>
+                                <p class="car-details" id="driver-car">Nissan Versa • ABC-123-A</p>
+                                <span class="rating"><i class="fa-solid fa-star"></i> 4.95</span>
+                            </div>
+                        </div>
+                        <div class="trip-progress">
+                            <div class="eta-large" id="trip-eta">Llegada estimada: 12 min</div>
+                            <div class="progress-bar"><div id="progress-fill" class="fill"></div></div>
+                        </div>
+                        <div class="trip-actions">
+                            <button class="action-btn danger" id="cancel-active-btn"><i class="fa-solid fa-xmark"></i> Cancelar Viaje</button>
+                        </div>
+                    </div>
+
+                    <div id="status-rating" class="status-state hidden">
+                        <div class="rating-box">
+                            <i class="fa-solid fa-circle-check check-icon"></i>
+                            <h3>¡Has llegado a tu destino!</h3>
+                            <div class="star-rating">
+                                <i class="fa-solid fa-star star" data-rating="1"></i>
+                                <i class="fa-solid fa-star star" data-rating="2"></i>
+                                <i class="fa-solid fa-star star" data-rating="3"></i>
+                                <i class="fa-solid fa-star star" data-rating="4"></i>
+                                <i class="fa-solid fa-star star" data-rating="5"></i>
+                            </div>
+                            <button id="finish-trip-btn" class="primary-btn">Enviar y Finalizar</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="view-history" class="view hidden">
+                <h2>Actividad reciente</h2>
+                <div class="history-list" id="history-container"></div>
+            </section>
+        </main>
+
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <!-- Modal Configuración -->
+    <div id="settings-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Configuración de Cuenta</h3>
+                <button id="close-settings" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Nombre:</strong> <span id="modal-user-name"></span></p>
+                <p><strong>Email:</strong> <span id="modal-user-email"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Métodos de Pago -->
+    <div id="payment-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Selecciona Método de Pago</h3>
+                <button id="close-payment" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body payment-options-list">
+                <div class="payment-option-item" data-method="cash" data-icon="fa-solid fa-money-bill-wave" data-text="Efectivo">
+                    <i class="fa-solid fa-money-bill-wave"></i> <span>Efectivo</span>
+                </div>
+                <div class="payment-option-item" data-method="card" data-icon="fa-solid fa-credit-card" data-text="Visa •••• 4242">
+                    <i class="fa-solid fa-credit-card"></i> <span>Visa •••• 4242</span>
+                </div>
+                <div class="payment-option-item" data-method="paypal" data-icon="fa-brands fa-paypal" data-text="PayPal">
+                    <i class="fa-brands fa-paypal"></i> <span>PayPal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
