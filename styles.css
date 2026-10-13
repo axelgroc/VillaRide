@@ -267,6 +267,11 @@ body, html {
     display: none !important;
 }
 
+.header h2 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
 /* Location inputs */
 .location-box {
     display: flex;
@@ -740,7 +745,7 @@ body, html {
     align-items: center;
 }
 
-/* Map Container (PC por defecto ocupa el espacio derecho) */
+/* Map Container (PC por defecto) */
 #map-container {
     flex: 1;
     height: 100vh;
@@ -843,7 +848,7 @@ body, html {
         box-shadow: none;
     }
 
-    /* Mapa incrustado debajo del destino en móviles */
+    /* Mapa incrustado exactamente debajo del destino en dispositivos móviles */
     #map-container {
         width: 100%;
         height: 240px;

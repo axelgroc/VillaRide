@@ -57,6 +57,7 @@
 
         <!-- Main Panel Control -->
         <main class="panel-container">
+            <!-- VISTA 1: VIAJAR -->
             <section id="view-ride" class="view active">
                 <div class="header">
                     <h2>¿A dónde vas?</h2>
@@ -85,7 +86,7 @@
                     </div>
                 </div>
 
-                <!-- Map Container (Integrado en el flujo vertical para móvil y lateral para PC) -->
+                <!-- Map Container (Debajo del input en móvil / Lateral en PC) -->
                 <div id="map-container">
                     <div id="map"></div>
                 </div>
@@ -186,9 +187,14 @@
                 </div>
             </section>
 
+            <!-- VISTA 2: ACTIVIDAD / HISTORIAL -->
             <section id="view-history" class="view hidden">
-                <h2>Actividad reciente</h2>
-                <div class="history-list" id="history-container"></div>
+                <div class="header">
+                    <h2>Actividad reciente</h2>
+                </div>
+                <div class="history-list" id="history-container">
+                    <!-- Dinámico -->
+                </div>
             </section>
         </main>
     </div>
@@ -202,7 +208,7 @@
             </div>
             <div class="modal-body">
                 <p><strong>Nombre:</strong> <span id="modal-user-name"></span></p>
-                <p><strong>Email:</strong> <span id="modal-user-email"></span></p>
+                <p style="margin-top: 10px;"><strong>Email:</strong> <span id="modal-user-email"></span></p>
             </div>
         </div>
     </div>
