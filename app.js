@@ -49,25 +49,13 @@ function initUserInformation() {
 
 function initMap() {
     map = L.map('map', { zoomControl: false }).setView([state.origin.lat, state.origin.lng], 15);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors',
-        referrerPolicy: 'no-referrer-when-downgrade'
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
-
     L.control.zoom({ position: 'bottomright' }).addTo(map);
-
     updateOriginMarker();
-
-    // Redibujar mapa al cargar y al cambiar el tamaño de ventana (responsive)
-    setTimeout(() => {
-        if (map) map.invalidateSize();
-    }, 400);
-
-    window.addEventListener('resize', () => {
-        if (map) map.invalidateSize();
-    });
+    setTimeout(() => map.invalidateSize(), 300);
 }
  
 
