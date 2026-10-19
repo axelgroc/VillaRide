@@ -11,17 +11,14 @@
 </head>
 <body class="light-mode">
     <div id="app">
-        <!-- Toast Notifications Container -->
+        <!-- Contenedor de Notificaciones Toast -->
         <div id="toast-container"></div>
 
-        <!-- Sidebar Navigation -->
+        <!-- Sidebar / Barra de Navegación Inferior Móvil -->
         <aside class="sidebar">
             <div class="logo-container">
                 <i class="fa-solid fa-car-side logo-icon"></i>
                 <span class="logo-text">Uber</span>
-                <button id="theme-toggle" class="icon-btn" title="Cambiar tema">
-                    <i class="fa-solid fa-moon"></i>
-                </button>
             </div>
             
             <nav class="nav-menu">
@@ -33,9 +30,13 @@
                     <i class="fa-solid fa-clock-rotate-left"></i>
                     <span>Actividad</span>
                 </button>
+                <button class="nav-item mobile-only" id="mobile-profile-tab">
+                    <i class="fa-solid fa-user"></i>
+                    <span>Cuenta</span>
+                </button>
             </nav>
 
-            <div class="user-profile-wrapper">
+            <div class="user-profile-wrapper desktop-only">
                 <div class="user-profile" id="user-profile-btn">
                     <div class="avatar"><i class="fa-solid fa-user"></i></div>
                     <div class="user-info">
@@ -45,17 +46,17 @@
                 </div>
 
                 <div id="user-dropdown" class="dropdown-menu hidden">
-                    <button class="dropdown-item" id="btn-settings">
+                    <button class="dropdown-item" id="btn-settings-desktop">
                         <i class="fa-solid fa-gear"></i> Configuración
                     </button>
-                    <button class="dropdown-item danger" id="btn-logout">
+                    <button class="dropdown-item danger" id="btn-logout-desktop">
                         <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
                     </button>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Panel Control -->
+        <!-- Contenedor Principal -->
         <main class="panel-container">
             <!-- VISTA 1: VIAJAR -->
             <section id="view-ride" class="view active">
@@ -63,7 +64,7 @@
                     <h2>¿A dónde vas?</h2>
                 </div>
 
-                <!-- Input Box -->
+                <!-- Caja de Búsqueda -->
                 <div class="location-box">
                     <div class="dots-indicator">
                         <span class="dot origin-dot"></span>
@@ -86,7 +87,7 @@
                     </div>
                 </div>
 
-                <!-- Map Container (Debajo del input en móvil / Lateral en PC) -->
+                <!-- Mapa Incrustado Móvil / Lateral en Escritorio -->
                 <div id="map-container">
                     <div id="map"></div>
                 </div>
@@ -102,7 +103,7 @@
                     </div>
                 </div>
 
-                <!-- Ride Options -->
+                <!-- Opciones de Vehículo -->
                 <div id="ride-options" class="ride-options hidden">
                     <h3>Vehículos disponibles</h3>
                     <div class="vehicle-list">
@@ -131,7 +132,7 @@
                         </div>
                     </div>
 
-                    <!-- Payment Method Selector -->
+                    <!-- Selector de Método de Pago -->
                     <div class="payment-selector" id="open-payment-modal">
                         <i class="fa-solid fa-credit-card" id="selected-payment-icon"></i>
                         <span id="selected-payment-text">Visa •••• 4242</span>
@@ -143,7 +144,7 @@
                     </button>
                 </div>
 
-                <!-- Status Card -->
+                <!-- Tarjeta de Estado del Viaje -->
                 <div id="status-card" class="status-card hidden">
                     <div id="status-searching" class="status-state">
                         <div class="pulse-ring"></div>
@@ -199,7 +200,35 @@
         </main>
     </div>
 
-    <!-- Modal Configuración -->
+    <!-- Modal de Cuenta Móvil / Menú de Usuario -->
+    <div id="mobile-account-modal" class="modal-overlay hidden">
+        <div class="modal-content bottom-sheet">
+            <div class="modal-header">
+                <h3>Mi Cuenta</h3>
+                <button id="close-account-modal" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body account-actions">
+                <div class="account-info-header">
+                    <div class="avatar-large"><i class="fa-solid fa-user"></i></div>
+                    <div>
+                        <h4 id="mobile-user-name">Usuario</h4>
+                        <span class="rating-badge"><i class="fa-solid fa-star"></i> <span id="mobile-user-rating">4.92</span></span>
+                    </div>
+                </div>
+                <button class="account-menu-btn" id="open-settings-btn">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Configuración</span>
+                    <i class="fa-solid fa-chevron-right chevron"></i>
+                </button>
+                <button class="account-menu-btn danger" id="btn-logout-mobile">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Configuración (Con opción de cambio de Tema Claro / Oscuro) -->
     <div id="settings-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
@@ -207,8 +236,24 @@
                 <button id="close-settings" class="icon-btn"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="modal-body">
-                <p><strong>Nombre:</strong> <span id="modal-user-name"></span></p>
-                <p style="margin-top: 10px;"><strong>Email:</strong> <span id="modal-user-email"></span></p>
+                <div class="setting-row">
+                    <span><strong>Nombre:</strong> <span id="modal-user-name"></span></span>
+                </div>
+                <div class="setting-row">
+                    <span><strong>Email:</strong> <span id="modal-user-email"></span></span>
+                </div>
+                
+                <!-- Opción de Tema Claro / Oscuro -->
+                <div class="setting-row theme-setting">
+                    <div class="theme-label">
+                        <i class="fa-solid fa-circle-half-stroke"></i>
+                        <span>Apariencia</span>
+                    </div>
+                    <button id="theme-toggle-btn" class="theme-switch-btn">
+                        <i id="theme-icon" class="fa-solid fa-moon"></i>
+                        <span id="theme-text">Modo Oscuro</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

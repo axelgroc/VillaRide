@@ -81,7 +81,7 @@ body, html {
     to { opacity: 0; transform: translateY(-10px); }
 }
 
-/* Sidebar */
+/* Sidebar Escritorio */
 .sidebar {
     width: 80px;
     background: var(--bg-primary);
@@ -157,6 +157,14 @@ body, html {
 .nav-item.active {
     color: var(--text-primary);
     border-left-color: var(--accent-color);
+}
+
+.mobile-only {
+    display: none !important;
+}
+
+.desktop-only {
+    display: flex !important;
 }
 
 .user-profile-wrapper {
@@ -243,9 +251,9 @@ body, html {
     color: var(--danger-color);
 }
 
-/* Panel Container */
+/* Panel Container Escritorio */
 .panel-container {
-    width: 400px;
+    width: 420px;
     background: var(--bg-primary);
     z-index: 90;
     box-shadow: var(--shadow);
@@ -260,7 +268,7 @@ body, html {
 .view {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
 }
 
 .view.hidden {
@@ -272,7 +280,7 @@ body, html {
     font-weight: 700;
 }
 
-/* Location inputs */
+/* Location Inputs */
 .location-box {
     display: flex;
     background: var(--bg-secondary);
@@ -439,7 +447,7 @@ body, html {
     font-weight: 600;
 }
 
-/* Vehicle options */
+/* Opciones de Vehículo */
 .ride-options {
     display: flex;
     flex-direction: column;
@@ -550,7 +558,7 @@ body, html {
     width: 100%;
 }
 
-/* Modales */
+/* Modales y Hojas Flotantes */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -580,6 +588,44 @@ body, html {
     margin-bottom: 15px;
 }
 
+.setting-row {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.setting-row:last-child {
+    border-bottom: none;
+}
+
+.theme-setting {
+    margin-top: 8px;
+}
+
+.theme-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.theme-switch-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
 .payment-options-list {
     display: flex;
     flex-direction: column;
@@ -601,7 +647,7 @@ body, html {
     background: var(--bg-secondary);
 }
 
-/* Status Card Overlay */
+/* Estado del Viaje */
 .status-card {
     position: absolute;
     top: 0;
@@ -729,7 +775,7 @@ body, html {
     color: var(--success-color);
 }
 
-/* History */
+/* Historial */
 .history-list {
     display: flex;
     flex-direction: column;
@@ -745,7 +791,7 @@ body, html {
     align-items: center;
 }
 
-/* Map Container (PC por defecto) */
+/* Contenedor del Mapa */
 #map-container {
     flex: 1;
     height: 100vh;
@@ -784,7 +830,7 @@ body, html {
     transition: transform 0.3s linear;
 }
 
-/* --- ADAPTABILIDAD RESPONSIVA PARA MÓVILES --- */
+/* --- OPTIMIZACIÓN RESPONSIVA PARA MÓVILES --- */
 @media (max-width: 768px) {
     body, html {
         overflow: auto;
@@ -796,10 +842,18 @@ body, html {
         overflow-y: auto;
     }
 
-    /* Barra de navegación inferior fija */
+    .mobile-only {
+        display: flex !important;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+
+    /* Barra Inferior Fija */
     .sidebar {
         width: 100%;
-        height: 60px;
+        height: 64px;
         flex-direction: row;
         justify-content: space-around;
         padding: 0;
@@ -820,15 +874,21 @@ body, html {
         flex-direction: row;
         justify-content: space-around;
         width: 100%;
+        height: 100%;
     }
 
     .nav-item {
-        flex-direction: row;
-        gap: 8px;
-        font-size: 12px;
+        flex-direction: column;
+        gap: 4px;
+        font-size: 11px;
         border-left: none;
         border-bottom: 3px solid transparent;
         justify-content: center;
+        height: 100%;
+    }
+
+    .nav-item i {
+        font-size: 18px;
     }
 
     .nav-item.active {
@@ -836,27 +896,25 @@ body, html {
         border-bottom-color: var(--accent-color);
     }
 
-    .user-profile-wrapper {
-        display: none;
-    }
-
     .panel-container {
         width: 100%;
         height: auto;
         min-height: 100vh;
-        padding-bottom: 90px;
+        padding: 18px 16px 90px 16px;
         box-shadow: none;
     }
 
-    /* Mapa incrustado exactamente debajo del destino en dispositivos móviles */
+    /* Mapa Optimizado Incrustado */
     #map-container {
         width: 100%;
-        height: 240px;
-        min-height: 240px;
-        border-radius: 12px;
+        height: 260px;
+        min-height: 260px;
+        border-radius: 16px;
         overflow: hidden;
         margin: 12px 0;
         position: relative;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: 1px solid var(--border-color);
     }
 
     #map {
@@ -865,5 +923,79 @@ body, html {
         position: absolute;
         top: 0;
         left: 0;
+    }
+
+    /* Bottom Sheet Modal para Cuenta en Móviles */
+    .modal-content.bottom-sheet {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+
+    .account-info-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .avatar-large {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: var(--bg-secondary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .rating-badge {
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+
+    .rating-badge i {
+        color: var(--star-color);
+    }
+
+    .account-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .account-menu-btn {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px;
+        background: var(--bg-secondary);
+        border: none;
+        border-radius: 10px;
+        color: var(--text-primary);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .account-menu-btn.danger {
+        color: var(--danger-color);
     }
 }

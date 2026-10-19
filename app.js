@@ -6,7 +6,7 @@ if (!currentUser) {
 
 // --- ESTADO DE LA APLICACIÓN ---
 const state = {
-    theme: 'light',
+    theme: localStorage.getItem('app_theme') || 'light',
     currentView: 'ride',
     origin: { name: 'Ubicación actual', lat: 19.4326, lng: -99.1332 },
     destination: null,
@@ -26,6 +26,7 @@ let searchTimeout = null;
 
 // --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
+    applyTheme(state.theme);
     initUserInformation();
     initMap();
     getUserLocation();
@@ -38,31 +39,64 @@ window.addEventListener('load', () => {
     if (map) map.invalidateSize();
 });
 
+function applyTheme(themeName) {
+    state.theme = themeName;
+    localStorage.setItem('app_theme', themeName);
+    document.body.className = themeName + '-mode';
+
+    const themeIcon = document.getElementById('theme-icon');
+    const themeText = document.getElementById('theme-text');
+    
+    if (themeIcon && themeText) {
+        if (themeName === 'light') {
+            themeIcon.className = 'fa-solid fa-moon';
+            themeText.textContent = 'Modo Oscuro';
+        } else {
+            themeIcon.className = 'fa-solid fa-sun';
+            themeText.textContent = 'Modo Claro';
+        }
+    }
+}
+
 function initUserInformation() {
     if (currentUser) {
-        document.getElementById('display-user-name').textContent = currentUser.name || 'Usuario';
-        if (currentUser.rating) {
-            document.getElementById('display-user-rating').textContent = currentUser.rating;
-        }
+        const name = currentUser.name || 'Usuario';
+        const rating = currentUser.rating || '4.92';
+
+        document.getElementById('display-user-name').textContent = name;
+        document.getElementById('display-user-rating').textContent = rating;
+
+        const mobileName = document.getElementById('mobile-user-name');
+        const mobileRating = document.getElementById('mobile-user-rating');
+        if (mobileName) mobileName.textContent = name;
+        if (mobileRating) mobileRating.textContent = rating;
     }
 }
 
 function initMap() {
     map = L.map('map', { zoomControl: false }).setView([state.origin.lat, state.origin.lng], 15);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; OpenStreetMap contributors',
+        referrerPolicy: 'no-referrer-when-downgrade'
     }).addTo(map);
+
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     updateOriginMarker();
-    setTimeout(() => map.invalidateSize(), 300);
-}
- 
 
- 
-// --- SISTEMA DE TOASTS ---
+    setTimeout(() => {
+        if (map) map.invalidateSize();
+    }, 400);
+
+    window.addEventListener('resize', () => {
+        if (map) map.invalidateSize();
+    });
+}
+
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
@@ -70,7 +104,6 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// --- GEOLOCALIZACIÓN CON MANEJO DE ERRORES ---
 function getUserLocation() {
     const originInput = document.getElementById('origin-input');
     originInput.value = 'Detectando ubicación...';
@@ -121,14 +154,31 @@ function updateOriginMarker() {
 
 // --- EVENT LISTENERS ---
 function setupEventListeners() {
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+    // Cambio de Tema desde Modal Configuración
+    document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+        const newTheme = state.theme === 'light' ? 'dark' : 'light';
+        applyTheme(newTheme);
+    });
 
+    // Navegación Sidebar / Menú Inferior
     document.querySelectorAll('.nav-item').forEach(btn => {
-        btn.addEventListener('click', (e) => switchView(e.currentTarget.dataset.view));
+        btn.addEventListener('click', (e) => {
+            const target = e.currentTarget;
+            if (target.id === 'mobile-profile-tab') {
+                document.getElementById('mobile-account-modal').classList.remove('hidden');
+            } else {
+                switchView(target.dataset.view);
+            }
+        });
+    });
+
+    document.getElementById('close-account-modal').addEventListener('click', () => {
+        document.getElementById('mobile-account-modal').classList.add('hidden');
     });
 
     document.getElementById('recenter-gps-btn').addEventListener('click', getUserLocation);
 
+    // Menú Perfil Escritorio
     const profileBtn = document.getElementById('user-profile-btn');
     const dropdown = document.getElementById('user-dropdown');
     if (profileBtn && dropdown) {
@@ -139,19 +189,29 @@ function setupEventListeners() {
         document.addEventListener('click', () => dropdown.classList.add('hidden'));
     }
 
-    document.getElementById('btn-logout').addEventListener('click', () => {
-        localStorage.removeItem('currentUser');
-        window.location.href = 'login.html';
-    });
-
-    document.getElementById('btn-settings').addEventListener('click', () => {
+    // Modal Configuración (Escritorio y Móvil)
+    const openSettings = () => {
         document.getElementById('modal-user-name').textContent = currentUser.name;
         document.getElementById('modal-user-email').textContent = currentUser.email;
         document.getElementById('settings-modal').classList.remove('hidden');
-    });
-    document.getElementById('close-settings').addEventListener('click', () => document.getElementById('settings-modal').classList.add('hidden'));
+        document.getElementById('mobile-account-modal').classList.add('hidden');
+    };
 
-    // Modal de Pagos
+    document.getElementById('btn-settings-desktop').addEventListener('click', openSettings);
+    document.getElementById('open-settings-btn').addEventListener('click', openSettings);
+    document.getElementById('close-settings').addEventListener('click', () => {
+        document.getElementById('settings-modal').classList.add('hidden');
+    });
+
+    // Logout (Escritorio y Móvil)
+    const logout = () => {
+        localStorage.removeItem('currentUser');
+        window.location.href = 'login.html';
+    };
+    document.getElementById('btn-logout-desktop').addEventListener('click', logout);
+    document.getElementById('btn-logout-mobile').addEventListener('click', logout);
+
+    // Modal Pagos
     const paymentModal = document.getElementById('payment-modal');
     document.getElementById('open-payment-modal').addEventListener('click', () => paymentModal.classList.remove('hidden'));
     document.getElementById('close-payment').addEventListener('click', () => paymentModal.classList.add('hidden'));
@@ -161,7 +221,7 @@ function setupEventListeners() {
             const el = e.currentTarget;
             state.selectedPayment = { text: el.dataset.text, icon: el.dataset.icon };
             document.getElementById('selected-payment-text').textContent = state.selectedPayment.text;
-            document.getElementById('selected-payment-iconclassName').className = state.selectedPayment.icon;
+            document.getElementById('selected-payment-icon').className = state.selectedPayment.icon;
             paymentModal.classList.add('hidden');
             showToast(`Método de pago cambiado a ${state.selectedPayment.text}`);
         });
@@ -178,6 +238,7 @@ function setupEventListeners() {
         }
     });
 
+    // Búsqueda en Inputs
     document.getElementById('origin-input').addEventListener('input', (e) => handleSearchInput(e.target.value, 'origin'));
     document.getElementById('destination-input').addEventListener('input', (e) => handleSearchInput(e.target.value, 'destination'));
 
@@ -318,13 +379,10 @@ function switchView(viewName) {
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
     document.getElementById('view-ride').classList.toggle('hidden', viewName !== 'ride');
     document.getElementById('view-history').classList.toggle('hidden', viewName !== 'history');
-}
 
-function toggleTheme() {
-    state.theme = state.theme === 'light' ? 'dark' : 'light';
-    document.body.className = state.theme + '-mode';
-    const icon = document.querySelector('#theme-toggle i');
-    icon.className = state.theme === 'light' ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
+    if (viewName === 'ride' && map) {
+        setTimeout(() => map.invalidateSize(), 300);
+    }
 }
 
 function setDestination(dest) {
@@ -371,7 +429,6 @@ function updatePricesAndEtas(distance) {
         const type = card.dataset.type;
         document.getElementById(`price-${type}`).textContent = `$${total.toFixed(2)}`;
         
-        // ETA dinámico según distancia (aprox 3 min por km)
         const etaMinutes = Math.max(2, Math.round(distance * 2.5));
         document.getElementById(`eta-${type}`).textContent = `${etaMinutes} min de espera`;
     });
@@ -393,10 +450,11 @@ function drawRoute() {
         [state.destination.lat, state.destination.lng]
     ];
     routePolyline = L.polyline(points, { color: '#000000', weight: 4, opacity: 0.8 }).addTo(map);
-    map.fitBounds(L.latLngBounds(points), { padding: [50, 50] });
+    map.fitBounds(L.latLngBounds(points), { padding: [30, 30] });
+    setTimeout(() => map.invalidateSize(), 200);
 }
 
-// --- FLUJO Y SIMULACIÓN CON ROTACIÓN DE VEHÍCULO Y ETA DINÁMICO ---
+// --- FLUJO DEL VIAJE ---
 function startSearchTrip() {
     showStatusCard('searching');
     showToast('Buscando conductor cercano...');
@@ -435,7 +493,6 @@ function startTripSimulation() {
         const currentLat = state.origin.lat + (state.destination.lat - state.origin.lat) * (progress / steps);
         const currentLng = state.origin.lng + (state.destination.lng - state.origin.lng) * (progress / steps);
 
-        // Calcular ángulo de rotación (Heading) para que el coche apunte hacia adelante
         const angle = Math.atan2(currentLng - prevLng, currentLat - prevLat) * (180 / Math.PI);
         const carEl = document.getElementById('car-icon-el');
         if (carEl) {
@@ -502,6 +559,11 @@ function showStatusCard(stateName) {
 function renderHistory() {
     const container = document.getElementById('history-container');
     if (!container) return;
+
+    if (state.history.length === 0) {
+        container.innerHTML = '<p style="font-size: 14px; color: var(--text-secondary);">No hay viajes registrados aún.</p>';
+        return;
+    }
 
     container.innerHTML = state.history.map(item => `
         <div class="history-item">
