@@ -159,13 +159,8 @@ body, html {
     border-left-color: var(--accent-color);
 }
 
-.mobile-only {
-    display: none !important;
-}
-
-.desktop-only {
-    display: flex !important;
-}
+.mobile-only { display: none !important; }
+.desktop-only { display: flex !important; }
 
 .user-profile-wrapper {
     margin-top: auto;
@@ -185,9 +180,7 @@ body, html {
     font-size: 12px;
 }
 
-.user-profile:hover {
-    background: var(--bg-secondary);
-}
+.user-profile:hover { background: var(--bg-secondary); }
 
 .avatar {
     width: 40px;
@@ -210,9 +203,7 @@ body, html {
     font-size: 11px;
 }
 
-.rating i {
-    color: var(--star-color);
-}
+.rating i { color: var(--star-color); }
 
 .dropdown-menu {
     position: absolute;
@@ -243,13 +234,8 @@ body, html {
     width: 100%;
 }
 
-.dropdown-item:hover {
-    background: var(--bg-secondary);
-}
-
-.dropdown-item.danger {
-    color: var(--danger-color);
-}
+.dropdown-item:hover { background: var(--bg-secondary); }
+.dropdown-item.danger { color: var(--danger-color); }
 
 /* Panel Container Escritorio */
 .panel-container {
@@ -271,9 +257,7 @@ body, html {
     gap: 18px;
 }
 
-.view.hidden {
-    display: none !important;
-}
+.view.hidden { display: none !important; }
 
 .header h2 {
     font-size: 24px;
@@ -389,13 +373,8 @@ body, html {
     color: var(--text-primary);
 }
 
-.search-result-item:last-child {
-    border-bottom: none;
-}
-
-.search-result-item:hover {
-    background: var(--bg-secondary);
-}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: var(--bg-secondary); }
 
 /* Favoritos y Recientes */
 .favorites-section {
@@ -434,9 +413,7 @@ body, html {
     transition: background 0.2s;
 }
 
-.favorite-item:hover {
-    background: var(--border-color);
-}
+.favorite-item:hover { background: var(--border-color); }
 
 .text-btn {
     background: none;
@@ -472,13 +449,8 @@ body, html {
     transition: all 0.2s;
 }
 
-.vehicle-card:hover {
-    border-color: var(--border-color);
-}
-
-.vehicle-card.selected {
-    border-color: var(--text-primary);
-}
+.vehicle-card:hover { border-color: var(--border-color); }
+.vehicle-card.selected { border-color: var(--text-primary); }
 
 .vehicle-card img {
     width: 50px;
@@ -487,9 +459,7 @@ body, html {
     margin-right: 12px;
 }
 
-.vehicle-info {
-    flex: 1;
-}
+.vehicle-info { flex: 1; }
 
 .vehicle-title {
     display: flex;
@@ -543,9 +513,7 @@ body, html {
     transition: opacity 0.2s;
 }
 
-.primary-btn:hover {
-    opacity: 0.9;
-}
+.primary-btn:hover { opacity: 0.9; }
 
 .secondary-btn {
     background: var(--bg-secondary);
@@ -558,7 +526,7 @@ body, html {
     width: 100%;
 }
 
-/* Modales y Hojas Flotantes */
+/* Modales */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -596,13 +564,9 @@ body, html {
     justify-content: space-between;
 }
 
-.setting-row:last-child {
-    border-bottom: none;
-}
+.setting-row:last-child { border-bottom: none; }
 
-.theme-setting {
-    margin-top: 8px;
-}
+.theme-setting { margin-top: 8px; }
 
 .theme-label {
     display: flex;
@@ -643,9 +607,7 @@ body, html {
     transition: background 0.2s;
 }
 
-.payment-option-item:hover {
-    background: var(--bg-secondary);
-}
+.payment-option-item:hover { background: var(--bg-secondary); }
 
 /* Estado del Viaje */
 .status-card {
@@ -766,9 +728,7 @@ body, html {
     cursor: pointer;
 }
 
-.star-rating .star.active {
-    color: var(--star-color);
-}
+.star-rating .star.active { color: var(--star-color); }
 
 .check-icon {
     font-size: 50px;
@@ -811,9 +771,7 @@ body, html {
     z-index: 1;
 }
 
-.hidden {
-    display: none !important;
-}
+.hidden { display: none !important; }
 
 .custom-marker {
     background: #000;
@@ -826,15 +784,11 @@ body, html {
     box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
-.car-marker {
-    transition: transform 0.3s linear;
-}
+.car-marker { transition: transform 0.3s linear; }
 
-/* --- OPTIMIZACIÓN RESPONSIVA PARA MÓVILES --- */
+/* --- OPTIMIZACIÓN MÓVIL --- */
 @media (max-width: 768px) {
-    body, html {
-        overflow: auto;
-    }
+    body, html { overflow: auto; }
 
     #app {
         flex-direction: column;
@@ -842,15 +796,9 @@ body, html {
         overflow-y: auto;
     }
 
-    .mobile-only {
-        display: flex !important;
-    }
+    .mobile-only { display: flex !important; }
+    .desktop-only { display: none !important; }
 
-    .desktop-only {
-        display: none !important;
-    }
-
-    /* Barra Inferior Fija */
     .sidebar {
         width: 100%;
         height: 64px;
@@ -866,9 +814,7 @@ body, html {
         background: var(--bg-primary);
     }
 
-    .logo-container {
-        display: none;
-    }
+    .logo-container { display: none; }
 
     .nav-menu {
         flex-direction: row;
@@ -887,9 +833,7 @@ body, html {
         height: 100%;
     }
 
-    .nav-item i {
-        font-size: 18px;
-    }
+    .nav-item i { font-size: 18px; }
 
     .nav-item.active {
         border-left-color: transparent;
@@ -904,7 +848,6 @@ body, html {
         box-shadow: none;
     }
 
-    /* Mapa Optimizado Incrustado */
     #map-container {
         width: 100%;
         height: 260px;
@@ -925,7 +868,6 @@ body, html {
         left: 0;
     }
 
-    /* Bottom Sheet Modal para Cuenta en Móviles */
     .modal-content.bottom-sheet {
         position: fixed;
         bottom: 0;
@@ -970,9 +912,7 @@ body, html {
         color: var(--text-secondary);
     }
 
-    .rating-badge i {
-        color: var(--star-color);
-    }
+    .rating-badge i { color: var(--star-color); }
 
     .account-actions {
         display: flex;
@@ -995,7 +935,5 @@ body, html {
         width: 100%;
     }
 
-    .account-menu-btn.danger {
-        color: var(--danger-color);
-    }
+    .account-menu-btn.danger { color: var(--danger-color); }
 }

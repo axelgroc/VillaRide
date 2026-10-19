@@ -20,7 +20,7 @@ const state = {
     favorites: JSON.parse(localStorage.getItem('user_favorites') || '[]')
 };
 
-let map, originMarker, destMarker, driverMarker, routePolyline;
+let map, originMarker, destMarker, driverMarker, routePolyline, traveledPolyline;
 let tripInterval = null;
 let searchTimeout = null;
 
@@ -154,13 +154,11 @@ function updateOriginMarker() {
 
 // --- EVENT LISTENERS ---
 function setupEventListeners() {
-    // Cambio de Tema desde Modal Configuración
     document.getElementById('theme-toggle-btn').addEventListener('click', () => {
         const newTheme = state.theme === 'light' ? 'dark' : 'light';
         applyTheme(newTheme);
     });
 
-    // Navegación Sidebar / Menú Inferior
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const target = e.currentTarget;
@@ -178,7 +176,6 @@ function setupEventListeners() {
 
     document.getElementById('recenter-gps-btn').addEventListener('click', getUserLocation);
 
-    // Menú Perfil Escritorio
     const profileBtn = document.getElementById('user-profile-btn');
     const dropdown = document.getElementById('user-dropdown');
     if (profileBtn && dropdown) {
@@ -189,7 +186,6 @@ function setupEventListeners() {
         document.addEventListener('click', () => dropdown.classList.add('hidden'));
     }
 
-    // Modal Configuración (Escritorio y Móvil)
     const openSettings = () => {
         document.getElementById('modal-user-name').textContent = currentUser.name;
         document.getElementById('modal-user-email').textContent = currentUser.email;
@@ -203,7 +199,6 @@ function setupEventListeners() {
         document.getElementById('settings-modal').classList.add('hidden');
     });
 
-    // Logout (Escritorio y Móvil)
     const logout = () => {
         localStorage.removeItem('currentUser');
         window.location.href = 'login.html';
@@ -211,7 +206,6 @@ function setupEventListeners() {
     document.getElementById('btn-logout-desktop').addEventListener('click', logout);
     document.getElementById('btn-logout-mobile').addEventListener('click', logout);
 
-    // Modal Pagos
     const paymentModal = document.getElementById('payment-modal');
     document.getElementById('open-payment-modal').addEventListener('click', () => paymentModal.classList.remove('hidden'));
     document.getElementById('close-payment').addEventListener('click', () => paymentModal.classList.add('hidden'));
@@ -227,7 +221,6 @@ function setupEventListeners() {
         });
     });
 
-    // Guardar en Favoritos
     document.getElementById('save-favorite-btn').addEventListener('click', () => {
         if (!state.destination) return;
         if (!state.favorites.some(f => f.name === state.destination.name)) {
@@ -238,7 +231,6 @@ function setupEventListeners() {
         }
     });
 
-    // Búsqueda en Inputs
     document.getElementById('origin-input').addEventListener('input', (e) => handleSearchInput(e.target.value, 'origin'));
     document.getElementById('destination-input').addEventListener('input', (e) => handleSearchInput(e.target.value, 'destination'));
 
@@ -406,6 +398,8 @@ function resetDestination() {
 
     if (destMarker) map.removeLayer(destMarker);
     if (routePolyline) map.removeLayer(routePolyline);
+    if (traveledPolyline) map.removeLayer(traveledPolyline);
+    if (driverMarker) map.removeLayer(driverMarker);
     map.setView([state.origin.lat, state.origin.lng], 15);
 }
 
@@ -454,7 +448,7 @@ function drawRoute() {
     setTimeout(() => map.invalidateSize(), 200);
 }
 
-// --- FLUJO DEL VIAJE ---
+// --- FLUJO DEL VIAJE CON RUTA EN TIEMPO REAL ---
 function startSearchTrip() {
     showStatusCard('searching');
     showToast('Buscando conductor cercano...');
@@ -466,15 +460,22 @@ function startSearchTrip() {
 function startTripSimulation() {
     state.tripState = 'in_progress';
     showStatusCard('active');
-    showToast('¡Conductor asignado! En camino a recogerte.');
+    showToast('¡Conductor asignado! En camino a tu destino.');
 
     const carIcon = L.divIcon({
         className: 'custom-marker car-marker',
         html: '<i class="fa-solid fa-car" id="car-icon-el"></i>',
-        iconSize: [24, 24]
+        iconSize: [26, 26]
     });
 
     driverMarker = L.marker([state.origin.lat, state.origin.lng], { icon: carIcon }).addTo(map);
+
+    if (traveledPolyline) map.removeLayer(traveledPolyline);
+    traveledPolyline = L.polyline([[state.origin.lat, state.origin.lng]], {
+        color: '#05a357',
+        weight: 5,
+        opacity: 0.9
+    }).addTo(map);
 
     let progress = 0;
     const steps = 100;
@@ -493,6 +494,8 @@ function startTripSimulation() {
         const currentLat = state.origin.lat + (state.destination.lat - state.origin.lat) * (progress / steps);
         const currentLng = state.origin.lng + (state.destination.lng - state.origin.lng) * (progress / steps);
 
+        traveledPolyline.addLatLng([currentLat, currentLng]);
+
         const angle = Math.atan2(currentLng - prevLng, currentLat - prevLat) * (180 / Math.PI);
         const carEl = document.getElementById('car-icon-el');
         if (carEl) {
@@ -503,7 +506,7 @@ function startTripSimulation() {
         prevLng = currentLng;
 
         driverMarker.setLatLng([currentLat, currentLng]);
-        map.panTo([currentLat, currentLng]);
+        map.panTo([currentLat, currentLng], { animate: true, duration: 0.1 });
 
         if (progress >= steps) {
             clearInterval(tripInterval);
@@ -516,6 +519,18 @@ function finishTrip() {
     state.tripState = 'rating';
     showStatusCard('rating');
     showToast('Has llegado a tu destino');
+
+    map.setView([state.destination.lat, state.destination.lng], 17, { animate: true });
+
+    if (destMarker) {
+        destMarker.bindPopup(`
+            <div style="text-align: center; padding: 5px;">
+                <i class="fa-solid fa-circle-check" style="color: #05a357; font-size: 24px; margin-bottom: 5px;"></i><br>
+                <strong style="font-size: 14px;">¡Llegaste a tu destino!</strong><br>
+                <span style="font-size: 12px; color: #666;">${state.destination.name}</span>
+            </div>
+        `).openPopup();
+    }
 }
 
 function completeTripProcess() {
@@ -544,6 +559,7 @@ function cancelTrip() {
 function resetTripState() {
     state.tripState = 'idle';
     if (driverMarker) map.removeLayer(driverMarker);
+    if (traveledPolyline) map.removeLayer(traveledPolyline);
     document.getElementById('status-card').classList.add('hidden');
     resetDestination();
 }
