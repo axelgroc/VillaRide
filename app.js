@@ -4,6 +4,34 @@ if (!currentUser) {
     window.location.href = 'login.html';
 }
 
+// --- BASE DE DATOS DE CONDUCTORES SIMULADOS ---
+const DRIVERS_DATABASE = [
+    {
+        name: 'Carlos Mendoza',
+        car: 'Nissan Versa • Blanco',
+        plate: 'ABC-123-A',
+        rating: '4.95',
+        phone: '+52 55 1234 5678',
+        img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop'
+    },
+    {
+        name: 'Ana Sofia Ramos',
+        car: 'Toyota Prius • Gris',
+        plate: 'XYZ-789-B',
+        rating: '4.98',
+        phone: '+52 55 9876 5432',
+        img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop'
+    },
+    {
+        name: 'Javier Hernández',
+        car: 'Chevrolet Onix • Negro',
+        plate: 'MEX-456-C',
+        rating: '4.91',
+        phone: '+52 55 5555 1234',
+        img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop'
+    }
+];
+
 // --- ESTADO DE LA APLICACIÓN ---
 const state = {
     theme: localStorage.getItem('app_theme') || 'light',
@@ -12,6 +40,7 @@ const state = {
     destination: null,
     selectedVehicle: 'uberx',
     selectedPayment: { text: 'Visa •••• 4242', icon: 'fa-solid fa-credit-card' },
+    activeDriver: null,
     tripState: 'idle',
     tripProgress: 0,
     history: [
@@ -20,9 +49,15 @@ const state = {
     favorites: JSON.parse(localStorage.getItem('user_favorites') || '[]')
 };
 
-let map, originMarker, destMarker, driverMarker, routePolyline, traveledPolyline;
+let map, tileLayer, originMarker, destMarker, driverMarker, routePolyline, traveledPolyline;
 let tripInterval = null;
 let searchTimeout = null;
+
+// URL de Tiles (CartoDB Positron / Dark Matter - Diseño estilo Uber moderno)
+const TILE_URLS = {
+    light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+};
 
 // --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
@@ -33,10 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     renderHistory();
     renderFavorites();
-});
-
-window.addEventListener('load', () => {
-    if (map) map.invalidateSize();
 });
 
 function applyTheme(themeName) {
@@ -55,6 +86,16 @@ function applyTheme(themeName) {
             themeIcon.className = 'fa-solid fa-sun';
             themeText.textContent = 'Modo Claro';
         }
+    }
+
+    // Actualizar estilo del mapa si está inicializado
+    if (map && tileLayer) {
+        map.removeLayer(tileLayer);
+        tileLayer = L.tileLayer(TILE_URLS[themeName], {
+            maxZoom: 19,
+            subdomains: 'abcd',
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
+        }).addTo(map);
     }
 }
 
@@ -76,18 +117,22 @@ function initUserInformation() {
 function initMap() {
     map = L.map('map', { zoomControl: false }).setView([state.origin.lat, state.origin.lng], 15);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Mapa Estilizado Moderno (CartoDB Voyager / Dark)
+    tileLayer = L.tileLayer(TILE_URLS[state.theme], {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors',
-        referrerPolicy: 'no-referrer-when-downgrade'
+        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
     }).addTo(map);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     updateOriginMarker();
 
-    setTimeout(() => {
+    // Redimensionado Automático Responsivo
+    const resizeObserver = new ResizeObserver(() => {
         if (map) map.invalidateSize();
-    }, 400);
+    });
+    const mapContainer = document.getElementById('map-container');
+    if (mapContainer) resizeObserver.observe(mapContainer);
 
     window.addEventListener('resize', () => {
         if (map) map.invalidateSize();
@@ -257,6 +302,19 @@ function setupEventListeners() {
     document.getElementById('cancel-ride-btn').addEventListener('click', cancelTrip);
     document.getElementById('cancel-active-btn').addEventListener('click', cancelTrip);
     document.getElementById('finish-trip-btn').addEventListener('click', completeTripProcess);
+
+    // Acciones del Conductor
+    document.getElementById('call-driver-btn').addEventListener('click', () => {
+        if (state.activeDriver) {
+            showToast(`Llamando a ${state.activeDriver.name} (${state.activeDriver.phone})...`);
+        }
+    });
+
+    document.getElementById('msg-driver-btn').addEventListener('click', () => {
+        if (state.activeDriver) {
+            showToast(`Abriendo chat con ${state.activeDriver.name}...`);
+        }
+    });
 }
 
 // --- FAVORITOS Y RECIENTES ---
@@ -444,14 +502,19 @@ function drawRoute() {
         [state.destination.lat, state.destination.lng]
     ];
     routePolyline = L.polyline(points, { color: '#000000', weight: 4, opacity: 0.8 }).addTo(map);
-    map.fitBounds(L.latLngBounds(points), { padding: [30, 30] });
+    map.fitBounds(L.latLngBounds(points), { padding: [50, 50] });
     setTimeout(() => map.invalidateSize(), 200);
 }
 
-// --- FLUJO DEL VIAJE CON RUTA EN TIEMPO REAL ---
+// --- SIMULACIÓN DEL VIAJE & DATOS DEL CONDUCTOR ---
 function startSearchTrip() {
     showStatusCard('searching');
     showToast('Buscando conductor cercano...');
+
+    // Seleccionar conductor aleatorio de la BD
+    const randomDriver = DRIVERS_DATABASE[Math.floor(Math.random() * DRIVERS_DATABASE.length)];
+    state.activeDriver = randomDriver;
+
     setTimeout(() => {
         if (state.tripState === 'searching') startTripSimulation();
     }, 3000);
@@ -459,8 +522,18 @@ function startSearchTrip() {
 
 function startTripSimulation() {
     state.tripState = 'in_progress';
+    
+    // Inyectar datos del Conductor asignado en la UI
+    const d = state.activeDriver;
+    document.getElementById('driver-name').textContent = d.name;
+    document.getElementById('driver-car').textContent = d.car;
+    document.getElementById('driver-plate').textContent = d.plate;
+    document.getElementById('driver-rating').textContent = d.rating;
+    document.getElementById('driver-img').src = d.img;
+    document.getElementById('rating-driver-name').textContent = `Califica tu viaje con ${d.name}`;
+
     showStatusCard('active');
-    showToast('¡Conductor asignado! En camino a tu destino.');
+    showToast(`Conductor asignado: ${d.name}`);
 
     const carIcon = L.divIcon({
         className: 'custom-marker car-marker',
@@ -558,6 +631,7 @@ function cancelTrip() {
 
 function resetTripState() {
     state.tripState = 'idle';
+    state.activeDriver = null;
     if (driverMarker) map.removeLayer(driverMarker);
     if (traveledPolyline) map.removeLayer(traveledPolyline);
     document.getElementById('status-card').classList.add('hidden');

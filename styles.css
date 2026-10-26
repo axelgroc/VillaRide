@@ -48,7 +48,7 @@ body, html {
     overflow: hidden;
 }
 
-/* Notificaciones Toast */
+/* Toast Notifications */
 #toast-container {
     position: fixed;
     top: 20px;
@@ -102,15 +102,8 @@ body, html {
     margin-bottom: 40px;
 }
 
-.logo-icon {
-    font-size: 24px;
-}
-
-.logo-text {
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: -0.5px;
-}
+.logo-icon { font-size: 24px; }
+.logo-text { font-weight: 700; font-size: 18px; letter-spacing: -0.5px; }
 
 .icon-btn {
     background: none;
@@ -123,9 +116,7 @@ body, html {
     transition: background 0.2s;
 }
 
-.icon-btn:hover {
-    background: var(--bg-secondary);
-}
+.icon-btn:hover { background: var(--bg-secondary); }
 
 .nav-menu {
     display: flex;
@@ -150,9 +141,7 @@ body, html {
     transition: all 0.2s;
 }
 
-.nav-item i {
-    font-size: 20px;
-}
+.nav-item i { font-size: 20px; }
 
 .nav-item.active {
     color: var(--text-primary);
@@ -192,17 +181,8 @@ body, html {
     justify-content: center;
 }
 
-.user-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.rating {
-    color: var(--text-secondary);
-    font-size: 11px;
-}
-
+.user-info { display: flex; flex-direction: column; align-items: center; }
+.rating { color: var(--text-secondary); font-size: 11px; }
 .rating i { color: var(--star-color); }
 
 .dropdown-menu {
@@ -237,7 +217,7 @@ body, html {
 .dropdown-item:hover { background: var(--bg-secondary); }
 .dropdown-item.danger { color: var(--danger-color); }
 
-/* Panel Container Escritorio */
+/* Panel Lateral Escritorio */
 .panel-container {
     width: 420px;
     background: var(--bg-primary);
@@ -249,19 +229,31 @@ body, html {
     overflow-y: auto;
     position: relative;
     flex-shrink: 0;
+    height: 100vh;
 }
 
-.view {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
+.view { display: flex; flex-direction: column; gap: 18px; }
 .view.hidden { display: none !important; }
 
-.header h2 {
-    font-size: 24px;
-    font-weight: 700;
+.header h2 { font-size: 24px; font-weight: 700; }
+
+/* Contenedor del Mapa Ajustable */
+#map-container {
+    flex: 1;
+    height: 100vh;
+    position: relative;
+    background-color: var(--bg-secondary);
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
 }
 
 /* Location Inputs */
@@ -281,15 +273,9 @@ body, html {
     padding: 10px 0;
 }
 
-.dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-}
-
+.dot { width: 8px; height: 8px; border-radius: 50%; }
 .origin-dot { background: #000; }
 .dest-dot { background: #000; border-radius: 0; }
-
 .dark-mode .origin-dot, .dark-mode .dest-dot { background: #fff; }
 
 .line {
@@ -299,12 +285,7 @@ body, html {
     margin: 4px 0;
 }
 
-.inputs {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+.inputs { flex: 1; display: flex; flex-direction: column; gap: 10px; }
 
 .input-group {
     display: flex;
@@ -376,13 +357,8 @@ body, html {
 .search-result-item:last-child { border-bottom: none; }
 .search-result-item:hover { background: var(--bg-secondary); }
 
-/* Favoritos y Recientes */
-.favorites-section {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 5px;
-}
+/* Favoritos */
+.favorites-section { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
 
 .favorites-header {
     display: flex;
@@ -425,18 +401,8 @@ body, html {
 }
 
 /* Opciones de Vehículo */
-.ride-options {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-.vehicle-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+.ride-options { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
+.vehicle-list { display: flex; flex-direction: column; gap: 10px; }
 
 .vehicle-card {
     display: flex;
@@ -460,29 +426,10 @@ body, html {
 }
 
 .vehicle-info { flex: 1; }
-
-.vehicle-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-}
-
-.capacity {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-weight: 400;
-}
-
-.eta {
-    font-size: 12px;
-    color: var(--text-secondary);
-}
-
-.price {
-    font-weight: 700;
-    font-size: 16px;
-}
+.vehicle-title { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.capacity { font-size: 12px; color: var(--text-secondary); font-weight: 400; }
+.eta { font-size: 12px; color: var(--text-secondary); }
+.price { font-weight: 700; font-size: 16px; }
 
 .payment-selector {
     display: flex;
@@ -495,10 +442,7 @@ body, html {
     cursor: pointer;
 }
 
-.chevron {
-    margin-left: auto;
-    color: var(--text-secondary);
-}
+.chevron { margin-left: auto; color: var(--text-secondary); }
 
 .primary-btn {
     background: var(--accent-color);
@@ -529,10 +473,7 @@ body, html {
 /* Modales */
 .modal-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     z-index: 2000;
     display: flex;
@@ -549,12 +490,7 @@ body, html {
     box-shadow: var(--shadow);
 }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
 .setting-row {
     padding: 12px 0;
@@ -568,12 +504,7 @@ body, html {
 
 .theme-setting { margin-top: 8px; }
 
-.theme-label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 600;
-}
+.theme-label { display: flex; align-items: center; gap: 10px; font-weight: 600; }
 
 .theme-switch-btn {
     background: var(--bg-secondary);
@@ -590,11 +521,7 @@ body, html {
     transition: all 0.2s;
 }
 
-.payment-options-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
+.payment-options-list { display: flex; flex-direction: column; gap: 10px; }
 
 .payment-option-item {
     display: flex;
@@ -609,28 +536,19 @@ body, html {
 
 .payment-option-item:hover { background: var(--bg-secondary); }
 
-/* Estado del Viaje */
+/* Ficha del Conductor */
 .status-card {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background: var(--bg-primary);
-    padding: 30px;
+    padding: 24px;
     z-index: 10;
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
-.status-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 20px;
-}
+.status-state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 20px; }
 
 .pulse-ring {
     width: 80px;
@@ -654,6 +572,7 @@ body, html {
     padding: 16px;
     border: 1px solid var(--border-color);
     border-radius: 12px;
+    background: var(--bg-secondary);
 }
 
 .driver-card img {
@@ -661,24 +580,45 @@ body, html {
     height: 60px;
     border-radius: 50%;
     object-fit: cover;
+    border: 2px solid var(--accent-color);
 }
 
-.car-details {
-    font-size: 13px;
-    color: var(--text-secondary);
-}
+.driver-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.car-details { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
 
-.trip-progress {
-    width: 100%;
+.driver-sub-details {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    gap: 10px;
+    margin-top: 2px;
 }
 
-.eta-large {
+.badge-plate {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
     font-weight: 700;
-    font-size: 18px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
+
+.driver-actions-row {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.driver-actions-row .action-btn {
+    flex: 1;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.trip-progress { width: 100%; display: flex; flex-direction: column; gap: 8px; }
+.eta-large { font-weight: 700; font-size: 18px; }
 
 .progress-bar {
     height: 6px;
@@ -694,32 +634,6 @@ body, html {
     transition: width 0.5s ease;
 }
 
-.trip-actions {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
-
-.action-btn {
-    flex: 1;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-primary);
-    color: var(--text-primary);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.action-btn.danger {
-    background: var(--danger-color);
-    color: #fff;
-    border: none;
-}
-
 .star-rating {
     display: flex;
     gap: 10px;
@@ -729,18 +643,10 @@ body, html {
 }
 
 .star-rating .star.active { color: var(--star-color); }
-
-.check-icon {
-    font-size: 50px;
-    color: var(--success-color);
-}
+.check-icon { font-size: 50px; color: var(--success-color); }
 
 /* Historial */
-.history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
+.history-list { display: flex; flex-direction: column; gap: 12px; }
 
 .history-item {
     padding: 14px;
@@ -749,26 +655,6 @@ body, html {
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-/* Contenedor del Mapa */
-#map-container {
-    flex: 1;
-    height: 100vh;
-    min-height: 100%;
-    position: relative;
-    background-color: var(--bg-secondary);
-}
-
-#map {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1;
 }
 
 .hidden { display: none !important; }
@@ -786,12 +672,12 @@ body, html {
 
 .car-marker { transition: transform 0.3s linear; }
 
-/* --- OPTIMIZACIÓN MÓVIL --- */
+/* --- OPTIMIZACIÓN RESPONSIVA MÓVIL vs ESCRITORIO --- */
 @media (max-width: 768px) {
     body, html { overflow: auto; }
 
     #app {
-        flex-direction: column;
+        flex-direction: column-reverse;
         height: 100vh;
         overflow-y: auto;
     }
@@ -843,21 +729,18 @@ body, html {
     .panel-container {
         width: 100%;
         height: auto;
-        min-height: 100vh;
+        min-height: auto;
         padding: 18px 16px 90px 16px;
         box-shadow: none;
+        flex-shrink: 0;
     }
 
     #map-container {
         width: 100%;
-        height: 260px;
-        min-height: 260px;
-        border-radius: 16px;
-        overflow: hidden;
-        margin: 12px 0;
+        height: 280px;
+        min-height: 280px;
         position: relative;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        border: 1px solid var(--border-color);
+        flex-shrink: 0;
     }
 
     #map {
@@ -886,54 +769,4 @@ body, html {
         from { transform: translateY(100%); }
         to { transform: translateY(0); }
     }
-
-    .account-info-header {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 20px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .avatar-large {
-        width: 54px;
-        height: 54px;
-        border-radius: 50%;
-        background: var(--bg-secondary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 22px;
-    }
-
-    .rating-badge {
-        font-size: 12px;
-        color: var(--text-secondary);
-    }
-
-    .rating-badge i { color: var(--star-color); }
-
-    .account-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .account-menu-btn {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px;
-        background: var(--bg-secondary);
-        border: none;
-        border-radius: 10px;
-        color: var(--text-primary);
-        font-size: 14px;
-        font-weight: 600;
-        cursor: pointer;
-        width: 100%;
-    }
-
-    .account-menu-btn.danger { color: var(--danger-color); }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uber Web Clone</title>
+    <title>VillaRide - Transporte & Movilidad</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
         <aside class="sidebar">
             <div class="logo-container">
                 <i class="fa-solid fa-car-side logo-icon"></i>
-                <span class="logo-text">Uber</span>
+                <span class="logo-text">VillaRide</span>
             </div>
             
             <nav class="nav-menu">
@@ -56,15 +56,15 @@
             </div>
         </aside>
 
-        <!-- Contenedor Principal -->
+        <!-- Panel Lateral de Control -->
         <main class="panel-container">
-            <!-- VISTA 1: VIAJAR -->
+            <!-- VISTA VIAJAR -->
             <section id="view-ride" class="view active">
                 <div class="header">
                     <h2>¿A dónde vas?</h2>
                 </div>
 
-                <!-- Caja de Búsqueda -->
+                <!-- Inputs de Origen y Destino -->
                 <div class="location-box">
                     <div class="dots-indicator">
                         <span class="dot origin-dot"></span>
@@ -87,20 +87,15 @@
                     </div>
                 </div>
 
-                <!-- Mapa Incrustado Móvil / Lateral en Escritorio -->
-                <div id="map-container">
-                    <div id="map"></div>
-                </div>
-
-                <!-- Lugares Favoritos y Recientes -->
+                <!-- Favoritos y Recientes -->
                 <div id="favorites-section" class="favorites-section">
                     <div class="favorites-header">
                         <span>Favoritos y Recientes</span>
-                        <button id="save-favorite-btn" class="text-btn hidden" title="Guardar destino actual"><i class="fa-solid fa-star"></i> Guardar</button>
+                        <button id="save-favorite-btn" class="text-btn hidden" title="Guardar destino actual">
+                            <i class="fa-solid fa-star"></i> Guardar
+                        </button>
                     </div>
-                    <div id="favorites-list" class="favorites-list">
-                        <!-- Dinámico -->
-                    </div>
+                    <div id="favorites-list" class="favorites-list"></div>
                 </div>
 
                 <!-- Opciones de Vehículo -->
@@ -132,7 +127,6 @@
                         </div>
                     </div>
 
-                    <!-- Selector de Método de Pago -->
                     <div class="payment-selector" id="open-payment-modal">
                         <i class="fa-solid fa-credit-card" id="selected-payment-icon"></i>
                         <span id="selected-payment-text">Visa •••• 4242</span>
@@ -144,7 +138,7 @@
                     </button>
                 </div>
 
-                <!-- Tarjeta de Estado del Viaje -->
+                <!-- Tarjeta de Estado del Viaje y Datos del Conductor -->
                 <div id="status-card" class="status-card hidden">
                     <div id="status-searching" class="status-state">
                         <div class="pulse-ring"></div>
@@ -154,20 +148,28 @@
                     </div>
 
                     <div id="status-active" class="status-state hidden">
-                        <div class="driver-card">
-                            <img id="driver-img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" alt="Conductor">
+                        <!-- Ficha de Información Detallada del Conductor y Vehículo -->
+                        <div class="driver-card" id="driver-details-trigger">
+                            <img id="driver-img" src="" alt="Conductor">
                             <div class="driver-info">
-                                <h4 id="driver-name">Carlos Mendoza</h4>
-                                <p class="car-details" id="driver-car">Nissan Versa • ABC-123-A</p>
-                                <span class="rating"><i class="fa-solid fa-star"></i> 4.95</span>
+                                <h4 id="driver-name">--</h4>
+                                <p class="car-details" id="driver-car">--</p>
+                                <div class="driver-sub-details">
+                                    <span class="badge-plate" id="driver-plate">---</span>
+                                    <span class="rating"><i class="fa-solid fa-star"></i> <span id="driver-rating">5.0</span></span>
+                                </div>
                             </div>
                         </div>
+
                         <div class="trip-progress">
-                            <div class="eta-large" id="trip-eta">Llegada estimada: 12 min</div>
+                            <div class="eta-large" id="trip-eta">Llegada estimada: -- min</div>
                             <div class="progress-bar"><div id="progress-fill" class="fill"></div></div>
                         </div>
-                        <div class="trip-actions">
-                            <button class="action-btn danger" id="cancel-active-btn"><i class="fa-solid fa-xmark"></i> Cancelar Viaje</button>
+
+                        <div class="driver-actions-row">
+                            <button class="action-btn" id="call-driver-btn"><i class="fa-solid fa-phone"></i> Llamar</button>
+                            <button class="action-btn" id="msg-driver-btn"><i class="fa-solid fa-comment"></i> Mensaje</button>
+                            <button class="action-btn danger" id="cancel-active-btn"><i class="fa-solid fa-xmark"></i> Cancelar</button>
                         </div>
                     </div>
 
@@ -175,6 +177,7 @@
                         <div class="rating-box">
                             <i class="fa-solid fa-circle-check check-icon"></i>
                             <h3>¡Has llegado a tu destino!</h3>
+                            <p id="rating-driver-name" style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;">Califica a tu conductor</p>
                             <div class="star-rating">
                                 <i class="fa-solid fa-star star" data-rating="1"></i>
                                 <i class="fa-solid fa-star star" data-rating="2"></i>
@@ -188,19 +191,22 @@
                 </div>
             </section>
 
-            <!-- VISTA 2: ACTIVIDAD / HISTORIAL -->
+            <!-- VISTA ACTIVIDAD -->
             <section id="view-history" class="view hidden">
                 <div class="header">
                     <h2>Actividad reciente</h2>
                 </div>
-                <div class="history-list" id="history-container">
-                    <!-- Dinámico -->
-                </div>
+                <div class="history-list" id="history-container"></div>
             </section>
         </main>
+
+        <!-- Mapa Principal (En Escritorio toma la pantalla completa derecha, en Móvil se posiciona adecuadamente) -->
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
     </div>
 
-    <!-- Modal de Cuenta Móvil -->
+    <!-- Modales de la Aplicación -->
     <div id="mobile-account-modal" class="modal-overlay hidden">
         <div class="modal-content bottom-sheet">
             <div class="modal-header">
@@ -216,19 +222,16 @@
                     </div>
                 </div>
                 <button class="account-menu-btn" id="open-settings-btn">
-                    <i class="fa-solid fa-gear"></i>
-                    <span>Configuración</span>
+                    <i class="fa-solid fa-gear"></i> <span>Configuración</span>
                     <i class="fa-solid fa-chevron-right chevron"></i>
                 </button>
                 <button class="account-menu-btn danger" id="btn-logout-mobile">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span>Cerrar Sesión</span>
+                    <i class="fa-solid fa-right-from-bracket"></i> <span>Cerrar Sesión</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal Configuración -->
     <div id="settings-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
@@ -242,7 +245,6 @@
                 <div class="setting-row">
                     <span><strong>Email:</strong> <span id="modal-user-email"></span></span>
                 </div>
-                
                 <div class="setting-row theme-setting">
                     <div class="theme-label">
                         <i class="fa-solid fa-circle-half-stroke"></i>
@@ -257,7 +259,6 @@
         </div>
     </div>
 
-    <!-- Modal Métodos de Pago -->
     <div id="payment-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
