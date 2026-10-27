@@ -11,14 +11,14 @@
 </head>
 <body class="light-mode">
     <div id="app">
-        <!-- Contenedor de Notificaciones Toast -->
+        <!-- Notificaciones Toast -->
         <div id="toast-container"></div>
 
-        <!-- Sidebar / Barra de Navegación Inferior Móvil -->
+        <!-- Sidebar / Navegación -->
         <aside class="sidebar">
             <div class="logo-container">
                 <i class="fa-solid fa-car-side logo-icon"></i>
-                <span class="logo-text">VillaRide</span>
+                <span class="logo-text">Uber</span>
             </div>
             
             <nav class="nav-menu">
@@ -56,15 +56,13 @@
             </div>
         </aside>
 
-        <!-- Panel Lateral de Control -->
+        <!-- Panel de Control Principal -->
         <main class="panel-container">
-            <!-- VISTA VIAJAR -->
             <section id="view-ride" class="view active">
                 <div class="header">
                     <h2>¿A dónde vas?</h2>
                 </div>
 
-                <!-- Inputs de Origen y Destino -->
                 <div class="location-box">
                     <div class="dots-indicator">
                         <span class="dot origin-dot"></span>
@@ -138,7 +136,7 @@
                     </button>
                 </div>
 
-                <!-- Tarjeta de Estado del Viaje y Datos del Conductor -->
+                <!-- Tarjeta de Estado del Viaje y Conductor -->
                 <div id="status-card" class="status-card hidden">
                     <div id="status-searching" class="status-state">
                         <div class="pulse-ring"></div>
@@ -148,8 +146,7 @@
                     </div>
 
                     <div id="status-active" class="status-state hidden">
-                        <!-- Ficha de Información Detallada del Conductor y Vehículo -->
-                        <div class="driver-card" id="driver-details-trigger">
+                        <div class="driver-card">
                             <img id="driver-img" src="" alt="Conductor">
                             <div class="driver-info">
                                 <h4 id="driver-name">--</h4>
@@ -160,12 +157,10 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="trip-progress">
                             <div class="eta-large" id="trip-eta">Llegada estimada: -- min</div>
                             <div class="progress-bar"><div id="progress-fill" class="fill"></div></div>
                         </div>
-
                         <div class="driver-actions-row">
                             <button class="action-btn" id="call-driver-btn"><i class="fa-solid fa-phone"></i> Llamar</button>
                             <button class="action-btn" id="msg-driver-btn"><i class="fa-solid fa-comment"></i> Mensaje</button>
@@ -191,7 +186,6 @@
                 </div>
             </section>
 
-            <!-- VISTA ACTIVIDAD -->
             <section id="view-history" class="view hidden">
                 <div class="header">
                     <h2>Actividad reciente</h2>
@@ -200,13 +194,13 @@
             </section>
         </main>
 
-        <!-- Mapa Principal (En Escritorio toma la pantalla completa derecha, en Móvil se posiciona adecuadamente) -->
+        <!-- Contenedor del Mapa (Fuera del panel para ocupar toda la pantalla derecha en PC) -->
         <div id="map-container">
             <div id="map"></div>
         </div>
     </div>
 
-    <!-- Modales de la Aplicación -->
+    <!-- Modales -->
     <div id="mobile-account-modal" class="modal-overlay hidden">
         <div class="modal-content bottom-sheet">
             <div class="modal-header">
