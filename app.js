@@ -36,7 +36,7 @@ const DRIVERS_DATABASE = [
 const state = {
     theme: localStorage.getItem('app_theme') || 'light',
     currentView: 'ride',
-    origin: { name: 'Ubicación actual', lat: 19.4326, lng: -99.1332 },
+    origin: { name: 'CDMX (Centro)', lat: 19.4326, lng: -99.1332 },
     destination: null,
     selectedVehicle: 'uberx',
     selectedPayment: { text: 'Visa •••• 4242', icon: 'fa-solid fa-credit-card' },
@@ -53,7 +53,7 @@ let map, tileLayer, originMarker, destMarker, driverMarker, routePolyline, trave
 let tripInterval = null;
 let searchTimeout = null;
 
-// URL de Tiles (CartoDB Positron / Dark Matter - Diseño estilo Uber moderno)
+// URLs de Teselas del Mapa Estilizado (CartoDB con fallback seguro)
 const TILE_URLS = {
     light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
     dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -88,13 +88,12 @@ function applyTheme(themeName) {
         }
     }
 
-    // Actualizar estilo del mapa si está inicializado
     if (map && tileLayer) {
         map.removeLayer(tileLayer);
         tileLayer = L.tileLayer(TILE_URLS[themeName], {
             maxZoom: 19,
             subdomains: 'abcd',
-            attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
+            attribution: '&copy; CARTO &copy; OpenStreetMap'
         }).addTo(map);
     }
 }
@@ -115,24 +114,29 @@ function initUserInformation() {
 }
 
 function initMap() {
+    // Inicialización inmediata garantizada con coordenadas por defecto
     map = L.map('map', { zoomControl: false }).setView([state.origin.lat, state.origin.lng], 15);
 
-    // Mapa Estilizado Moderno (CartoDB Voyager / Dark)
     tileLayer = L.tileLayer(TILE_URLS[state.theme], {
         maxZoom: 19,
         subdomains: 'abcd',
-        attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; OpenStreetMap'
+        attribution: '&copy; CARTO &copy; OpenStreetMap'
     }).addTo(map);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
     updateOriginMarker();
 
-    // Redimensionado Automático Responsivo
-    const resizeObserver = new ResizeObserver(() => {
+    setTimeout(() => {
         if (map) map.invalidateSize();
-    });
+    }, 200);
+
     const mapContainer = document.getElementById('map-container');
-    if (mapContainer) resizeObserver.observe(mapContainer);
+    if (mapContainer && window.ResizeObserver) {
+        const resizeObserver = new ResizeObserver(() => {
+            if (map) map.invalidateSize();
+        });
+        resizeObserver.observe(mapContainer);
+    }
 
     window.addEventListener('resize', () => {
         if (map) map.invalidateSize();
@@ -151,40 +155,40 @@ function showToast(message, type = 'success') {
 
 function getUserLocation() {
     const originInput = document.getElementById('origin-input');
-    originInput.value = 'Detectando ubicación...';
+    if (originInput) originInput.value = state.origin.name;
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude } = position.coords;
-                state.origin.lat = latitude;
-                state.origin.lng = longitude;
+    if (!navigator.geolocation) return;
+
+    // Geolocalización no bloqueante
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const { latitude, longitude } = position.coords;
+            state.origin.lat = latitude;
+            state.origin.lng = longitude;
+
+            if (map) {
                 map.setView([latitude, longitude], 16);
                 updateOriginMarker();
+                map.invalidateSize();
+            }
 
-                try {
-                    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-                    const data = await res.json();
-                    const locationName = data.display_name.split(',')[0] || 'Mi Ubicación Actual';
-                    state.origin.name = locationName;
-                    originInput.value = locationName;
-                    showToast('Ubicación detectada con éxito');
-                } catch (e) {
-                    state.origin.name = 'Mi Ubicación Actual';
-                    originInput.value = 'Mi Ubicación Actual';
-                }
-            },
-            (error) => {
-                console.warn('Geolocalización fallida:', error);
-                originInput.value = state.origin.name;
-                showToast('No se pudo obtener el GPS. Usando ubicación por defecto.', 'error');
-            },
-            { enableHighAccuracy: true, timeout: 10000 }
-        );
-    } else {
-        originInput.value = state.origin.name;
-        showToast('Geolocalización no soportada en tu navegador', 'error');
-    }
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                const data = await res.json();
+                const locationName = data.display_name ? data.display_name.split(',')[0] : 'Mi Ubicación Actual';
+                state.origin.name = locationName;
+                if (originInput) originInput.value = locationName;
+                showToast('Ubicación detectada con éxito');
+            } catch (e) {
+                state.origin.name = 'Mi Ubicación Actual';
+                if (originInput) originInput.value = 'Mi Ubicación Actual';
+            }
+        },
+        (error) => {
+            console.warn('Geolocalización no disponible o denegada:', error.message);
+        },
+        { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+    );
 }
 
 function updateOriginMarker() {
@@ -197,7 +201,6 @@ function updateOriginMarker() {
     originMarker = L.marker([state.origin.lat, state.origin.lng], { icon: originIcon }).addTo(map);
 }
 
-// --- EVENT LISTENERS ---
 function setupEventListeners() {
     document.getElementById('theme-toggle-btn').addEventListener('click', () => {
         const newTheme = state.theme === 'light' ? 'dark' : 'light';
@@ -303,21 +306,15 @@ function setupEventListeners() {
     document.getElementById('cancel-active-btn').addEventListener('click', cancelTrip);
     document.getElementById('finish-trip-btn').addEventListener('click', completeTripProcess);
 
-    // Acciones del Conductor
     document.getElementById('call-driver-btn').addEventListener('click', () => {
-        if (state.activeDriver) {
-            showToast(`Llamando a ${state.activeDriver.name} (${state.activeDriver.phone})...`);
-        }
+        if (state.activeDriver) showToast(`Llamando a ${state.activeDriver.name} (${state.activeDriver.phone})...`);
     });
 
     document.getElementById('msg-driver-btn').addEventListener('click', () => {
-        if (state.activeDriver) {
-            showToast(`Abriendo chat con ${state.activeDriver.name}...`);
-        }
+        if (state.activeDriver) showToast(`Abriendo chat con ${state.activeDriver.name}...`);
     });
 }
 
-// --- FAVORITOS Y RECIENTES ---
 function renderFavorites() {
     const listContainer = document.getElementById('favorites-list');
     if (!listContainer) return;
@@ -346,7 +343,6 @@ function renderFavorites() {
     });
 }
 
-// --- BÚSQUEDA Y GEOCODIFICACIÓN ---
 function handleSearchInput(query, type) {
     clearTimeout(searchTimeout);
     const containerId = type === 'origin' ? 'origin-results' : 'destination-results';
@@ -375,13 +371,6 @@ async function searchLocation(query, type) {
         let url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(cleanQuery)}&limit=5&viewbox=${viewbox}`;
         let response = await fetch(url);
         let data = await response.json();
-
-        if (data.length === 0) {
-            const simplifiedQuery = cleanQuery.replace(/#/g, '').replace(/no\.|num\.|n°/gi, '');
-            url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(simplifiedQuery)}&limit=5&viewbox=${viewbox}`;
-            response = await fetch(url);
-            data = await response.json();
-        }
 
         container.innerHTML = '';
         if (data.length === 0) {
@@ -423,7 +412,6 @@ function selectLocation(place, type) {
     }
 }
 
-// --- VISTAS Y DESTINOS ---
 function switchView(viewName) {
     state.currentView = viewName;
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
@@ -506,12 +494,10 @@ function drawRoute() {
     setTimeout(() => map.invalidateSize(), 200);
 }
 
-// --- SIMULACIÓN DEL VIAJE & DATOS DEL CONDUCTOR ---
 function startSearchTrip() {
     showStatusCard('searching');
     showToast('Buscando conductor cercano...');
 
-    // Seleccionar conductor aleatorio de la BD
     const randomDriver = DRIVERS_DATABASE[Math.floor(Math.random() * DRIVERS_DATABASE.length)];
     state.activeDriver = randomDriver;
 
@@ -523,7 +509,6 @@ function startSearchTrip() {
 function startTripSimulation() {
     state.tripState = 'in_progress';
     
-    // Inyectar datos del Conductor asignado en la UI
     const d = state.activeDriver;
     document.getElementById('driver-name').textContent = d.name;
     document.getElementById('driver-car').textContent = d.car;

@@ -48,7 +48,6 @@ body, html {
     overflow: hidden;
 }
 
-/* Toast Notifications */
 #toast-container {
     position: fixed;
     top: 20px;
@@ -81,7 +80,6 @@ body, html {
     to { opacity: 0; transform: translateY(-10px); }
 }
 
-/* Sidebar Escritorio */
 .sidebar {
     width: 80px;
     background: var(--bg-primary);
@@ -142,11 +140,7 @@ body, html {
 }
 
 .nav-item i { font-size: 20px; }
-
-.nav-item.active {
-    color: var(--text-primary);
-    border-left-color: var(--accent-color);
-}
+.nav-item.active { color: var(--text-primary); border-left-color: var(--accent-color); }
 
 .mobile-only { display: none !important; }
 .desktop-only { display: flex !important; }
@@ -217,7 +211,6 @@ body, html {
 .dropdown-item:hover { background: var(--bg-secondary); }
 .dropdown-item.danger { color: var(--danger-color); }
 
-/* Panel Lateral Escritorio */
 .panel-container {
     width: 420px;
     background: var(--bg-primary);
@@ -237,7 +230,6 @@ body, html {
 
 .header h2 { font-size: 24px; font-weight: 700; }
 
-/* Contenedor del Mapa Ajustable */
 #map-container {
     flex: 1;
     height: 100vh;
@@ -256,7 +248,6 @@ body, html {
     z-index: 1;
 }
 
-/* Location Inputs */
 .location-box {
     display: flex;
     background: var(--bg-secondary);
@@ -304,13 +295,7 @@ body, html {
     outline: none;
 }
 
-.clear-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    padding: 4px;
-}
+.clear-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 4px; }
 
 .icon-btn-small {
     background: none;
@@ -323,10 +308,7 @@ body, html {
     transition: background 0.2s, color 0.2s;
 }
 
-.icon-btn-small:hover {
-    background: var(--bg-secondary);
-    color: var(--text-primary);
-}
+.icon-btn-small:hover { background: var(--bg-secondary); color: var(--text-primary); }
 
 .search-results-dropdown {
     position: absolute;
@@ -357,7 +339,6 @@ body, html {
 .search-result-item:last-child { border-bottom: none; }
 .search-result-item:hover { background: var(--bg-secondary); }
 
-/* Favoritos */
 .favorites-section { display: flex; flex-direction: column; gap: 8px; margin-top: 5px; }
 
 .favorites-header {
@@ -369,13 +350,7 @@ body, html {
     color: var(--text-secondary);
 }
 
-.favorites-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-height: 150px;
-    overflow-y: auto;
-}
+.favorites-list { display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; }
 
 .favorite-item {
     display: flex;
@@ -391,16 +366,8 @@ body, html {
 
 .favorite-item:hover { background: var(--border-color); }
 
-.text-btn {
-    background: none;
-    border: none;
-    color: var(--accent-color);
-    font-size: 12px;
-    cursor: pointer;
-    font-weight: 600;
-}
+.text-btn { background: none; border: none; color: var(--accent-color); font-size: 12px; cursor: pointer; font-weight: 600; }
 
-/* Opciones de Vehículo */
 .ride-options { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
 .vehicle-list { display: flex; flex-direction: column; gap: 10px; }
 
@@ -418,13 +385,7 @@ body, html {
 .vehicle-card:hover { border-color: var(--border-color); }
 .vehicle-card.selected { border-color: var(--text-primary); }
 
-.vehicle-card img {
-    width: 50px;
-    height: 35px;
-    object-fit: contain;
-    margin-right: 12px;
-}
-
+.vehicle-card img { width: 50px; height: 35px; object-fit: contain; margin-right: 12px; }
 .vehicle-info { flex: 1; }
 .vehicle-title { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 .capacity { font-size: 12px; color: var(--text-secondary); font-weight: 400; }
@@ -470,7 +431,6 @@ body, html {
     width: 100%;
 }
 
-/* Modales */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -501,9 +461,7 @@ body, html {
 }
 
 .setting-row:last-child { border-bottom: none; }
-
 .theme-setting { margin-top: 8px; }
-
 .theme-label { display: flex; align-items: center; gap: 10px; font-weight: 600; }
 
 .theme-switch-btn {
@@ -536,7 +494,6 @@ body, html {
 
 .payment-option-item:hover { background: var(--bg-secondary); }
 
-/* Ficha del Conductor */
 .status-card {
     position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
@@ -586,12 +543,7 @@ body, html {
 .driver-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
 .car-details { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
 
-.driver-sub-details {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 2px;
-}
+.driver-sub-details { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
 
 .badge-plate {
     background: var(--bg-card);
@@ -604,50 +556,20 @@ body, html {
     text-transform: uppercase;
 }
 
-.driver-actions-row {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
-
-.driver-actions-row .action-btn {
-    flex: 1;
-    padding: 10px;
-    font-size: 13px;
-    font-weight: 600;
-}
+.driver-actions-row { display: flex; gap: 10px; width: 100%; }
+.driver-actions-row .action-btn { flex: 1; padding: 10px; font-size: 13px; font-weight: 600; }
 
 .trip-progress { width: 100%; display: flex; flex-direction: column; gap: 8px; }
 .eta-large { font-weight: 700; font-size: 18px; }
 
-.progress-bar {
-    height: 6px;
-    background: var(--bg-secondary);
-    border-radius: 3px;
-    overflow: hidden;
-}
+.progress-bar { height: 6px; background: var(--bg-secondary); border-radius: 3px; overflow: hidden; }
+.progress-bar .fill { height: 100%; width: 0%; background: var(--success-color); transition: width 0.5s ease; }
 
-.progress-bar .fill {
-    height: 100%;
-    width: 0%;
-    background: var(--success-color);
-    transition: width 0.5s ease;
-}
-
-.star-rating {
-    display: flex;
-    gap: 10px;
-    font-size: 28px;
-    color: var(--border-color);
-    cursor: pointer;
-}
-
+.star-rating { display: flex; gap: 10px; font-size: 28px; color: var(--border-color); cursor: pointer; }
 .star-rating .star.active { color: var(--star-color); }
 .check-icon { font-size: 50px; color: var(--success-color); }
 
-/* Historial */
 .history-list { display: flex; flex-direction: column; gap: 12px; }
-
 .history-item {
     padding: 14px;
     border: 1px solid var(--border-color);
@@ -672,7 +594,6 @@ body, html {
 
 .car-marker { transition: transform 0.3s linear; }
 
-/* --- OPTIMIZACIÓN RESPONSIVA MÓVIL vs ESCRITORIO --- */
 @media (max-width: 768px) {
     body, html { overflow: auto; }
 
@@ -720,11 +641,7 @@ body, html {
     }
 
     .nav-item i { font-size: 18px; }
-
-    .nav-item.active {
-        border-left-color: transparent;
-        border-bottom-color: var(--accent-color);
-    }
+    .nav-item.active { border-left-color: transparent; border-bottom-color: var(--accent-color); }
 
     .panel-container {
         width: 100%;
@@ -749,24 +666,5 @@ body, html {
         position: absolute;
         top: 0;
         left: 0;
-    }
-
-    .modal-content.bottom-sheet {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        max-width: 100%;
-        border-bottom-left-radius: 0;
-        border-bottom-right-radius: 0;
-        border-top-left-radius: 20px;
-        border-top-right-radius: 20px;
-        animation: slideUp 0.3s ease;
-    }
-
-    @keyframes slideUp {
-        from { transform: translateY(100%); }
-        to { transform: translateY(0); }
     }
 }
