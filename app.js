@@ -1,10 +1,8 @@
-// --- VALIDACIÓN DE SESIÓN ---
 const currentUser = JSON.parse(localStorage.getItem('currentUser'));
 if (!currentUser) {
     window.location.href = 'login.html';
 }
 
-// --- BASE DE DATOS DE CONDUCTORES SIMULADOS ---
 const DRIVERS_DATABASE = [
     {
         name: 'Carlos Mendoza',
@@ -32,7 +30,6 @@ const DRIVERS_DATABASE = [
     }
 ];
 
-// --- ESTADO DE LA APLICACIÓN ---
 const state = {
     theme: localStorage.getItem('app_theme') || 'light',
     currentView: 'ride',
@@ -53,18 +50,22 @@ let map, tileLayer, originMarker, destMarker, driverMarker, routePolyline, trave
 let tripInterval = null;
 let searchTimeout = null;
 
-// URLs de Teselas del Mapa Estilizado (CartoDB con fallback seguro)
+// Usar OpenStreetMap estándar directamente (máxima compatibilidad sin bloqueos CORS externos)
 const TILE_URLS = {
-    light: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    light: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    dark: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
 };
 
-// --- INICIALIZACIÓN ---
 document.addEventListener('DOMContentLoaded', () => {
     applyTheme(state.theme);
     initUserInformation();
-    initMap();
-    getUserLocation();
+    
+    // Retrasar levemente la inicialización para garantizar que el DOM haya pintado el contenedor `#map`
+    setTimeout(() => {
+        initMap();
+        getUserLocation();
+    }, 150);
+
     setupEventListeners();
     renderHistory();
     renderFavorites();
@@ -92,8 +93,7 @@ function applyTheme(themeName) {
         map.removeLayer(tileLayer);
         tileLayer = L.tileLayer(TILE_URLS[themeName], {
             maxZoom: 19,
-            subdomains: 'abcd',
-            attribution: '&copy; CARTO &copy; OpenStreetMap'
+            attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
     }
 }
@@ -114,13 +114,13 @@ function initUserInformation() {
 }
 
 function initMap() {
-    // Inicialización inmediata garantizada con coordenadas por defecto
+    if (map) return; // Evitar doble inicialización
+
     map = L.map('map', { zoomControl: false }).setView([state.origin.lat, state.origin.lng], 15);
 
     tileLayer = L.tileLayer(TILE_URLS[state.theme], {
         maxZoom: 19,
-        subdomains: 'abcd',
-        attribution: '&copy; CARTO &copy; OpenStreetMap'
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     L.control.zoom({ position: 'bottomright' }).addTo(map);
@@ -128,15 +128,7 @@ function initMap() {
 
     setTimeout(() => {
         if (map) map.invalidateSize();
-    }, 200);
-
-    const mapContainer = document.getElementById('map-container');
-    if (mapContainer && window.ResizeObserver) {
-        const resizeObserver = new ResizeObserver(() => {
-            if (map) map.invalidateSize();
-        });
-        resizeObserver.observe(mapContainer);
-    }
+    }, 300);
 
     window.addEventListener('resize', () => {
         if (map) map.invalidateSize();
@@ -159,7 +151,6 @@ function getUserLocation() {
 
     if (!navigator.geolocation) return;
 
-    // Geolocalización no bloqueante
     navigator.geolocation.getCurrentPosition(
         async (position) => {
             const { latitude, longitude } = position.coords;
@@ -178,20 +169,20 @@ function getUserLocation() {
                 const locationName = data.display_name ? data.display_name.split(',')[0] : 'Mi Ubicación Actual';
                 state.origin.name = locationName;
                 if (originInput) originInput.value = locationName;
-                showToast('Ubicación detectada con éxito');
             } catch (e) {
                 state.origin.name = 'Mi Ubicación Actual';
                 if (originInput) originInput.value = 'Mi Ubicación Actual';
             }
         },
         (error) => {
-            console.warn('Geolocalización no disponible o denegada:', error.message);
+            console.warn('Geolocalización omitida:', error.message);
         },
         { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
     );
 }
 
 function updateOriginMarker() {
+    if (!map) return;
     if (originMarker) map.removeLayer(originMarker);
     const originIcon = L.divIcon({
         className: 'custom-marker',
@@ -475,6 +466,7 @@ function updatePricesAndEtas(distance) {
 }
 
 function drawRoute() {
+    if (!map) return;
     if (destMarker) map.removeLayer(destMarker);
     if (routePolyline) map.removeLayer(routePolyline);
 
@@ -564,7 +556,7 @@ function startTripSimulation() {
         prevLng = currentLng;
 
         driverMarker.setLatLng([currentLat, currentLng]);
-        map.panTo([currentLat, currentLng], { animate: true, duration: 0.1 });
+        if (map) map.panTo([currentLat, currentLng], { animate: true, duration: 0.1 });
 
         if (progress >= steps) {
             clearInterval(tripInterval);
@@ -578,7 +570,7 @@ function finishTrip() {
     showStatusCard('rating');
     showToast('Has llegado a tu destino');
 
-    map.setView([state.destination.lat, state.destination.lng], 17, { animate: true });
+    if (map) map.setView([state.destination.lat, state.destination.lng], 17, { animate: true });
 
     if (destMarker) {
         destMarker.bindPopup(`
@@ -617,8 +609,8 @@ function cancelTrip() {
 function resetTripState() {
     state.tripState = 'idle';
     state.activeDriver = null;
-    if (driverMarker) map.removeLayer(driverMarker);
-    if (traveledPolyline) map.removeLayer(traveledPolyline);
+    if (driverMarker && map) map.removeLayer(driverMarker);
+    if (traveledPolyline && map) map.removeLayer(traveledPolyline);
     document.getElementById('status-card').classList.add('hidden');
     resetDestination();
 }

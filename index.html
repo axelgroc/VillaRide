@@ -11,10 +11,8 @@
 </head>
 <body class="light-mode">
     <div id="app">
-        <!-- Notificaciones Toast -->
         <div id="toast-container"></div>
 
-        <!-- Sidebar / Navegación -->
         <aside class="sidebar">
             <div class="logo-container">
                 <i class="fa-solid fa-car-side logo-icon"></i>
@@ -56,7 +54,6 @@
             </div>
         </aside>
 
-        <!-- Panel de Control Principal -->
         <main class="panel-container">
             <section id="view-ride" class="view active">
                 <div class="header">
@@ -85,7 +82,6 @@
                     </div>
                 </div>
 
-                <!-- Favoritos y Recientes -->
                 <div id="favorites-section" class="favorites-section">
                     <div class="favorites-header">
                         <span>Favoritos y Recientes</span>
@@ -96,7 +92,6 @@
                     <div id="favorites-list" class="favorites-list"></div>
                 </div>
 
-                <!-- Opciones de Vehículo -->
                 <div id="ride-options" class="ride-options hidden">
                     <h3>Vehículos disponibles</h3>
                     <div class="vehicle-list">
@@ -136,7 +131,6 @@
                     </button>
                 </div>
 
-                <!-- Tarjeta de Estado del Viaje y Conductor -->
                 <div id="status-card" class="status-card hidden">
                     <div id="status-searching" class="status-state">
                         <div class="pulse-ring"></div>
@@ -194,7 +188,7 @@
             </section>
         </main>
 
-        <!-- Contenedor del Mapa (Fuera del panel para ocupar toda la pantalla derecha en PC) -->
+        <!-- Contenedor del Mapa con posicionamiento absoluto estricto -->
         <div id="map-container">
             <div id="map"></div>
         </div>

@@ -230,21 +230,24 @@ body, html {
 
 .header h2 { font-size: 24px; font-weight: 700; }
 
+/* MAP CONTAINER FORZADO */
 #map-container {
-    flex: 1;
+    flex-grow: 1;
     height: 100vh;
+    width: 100%;
     position: relative;
-    background-color: var(--bg-secondary);
+    display: block;
+    background-color: #e5e3df;
 }
 
 #map {
-    height: 100%;
-    width: 100%;
-    position: absolute;
+    position: absolute !important;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
+    width: 100% !important;
+    height: 100% !important;
     z-index: 1;
 }
 
@@ -654,15 +657,15 @@ body, html {
 
     #map-container {
         width: 100%;
-        height: 280px;
+        height: 280px !important;
         min-height: 280px;
         position: relative;
         flex-shrink: 0;
     }
 
     #map {
-        height: 100%;
-        width: 100%;
+        height: 100% !important;
+        width: 100% !important;
         position: absolute;
         top: 0;
         left: 0;
